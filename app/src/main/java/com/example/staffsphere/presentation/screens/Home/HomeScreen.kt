@@ -1,6 +1,7 @@
 package com.example.staffsphere.presentation.screens.Home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 
@@ -47,45 +49,59 @@ fun HomeScreen() {
 @Composable
 @Preview(showBackground = true)
 fun HomeMainScreen(data: HomeUiModel? = null) {
-    Column(
+Box(modifier = Modifier.fillMaxSize()){
+    Card (
         modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-        Column {
-            Text(
-                text = "Hey , ${data?.employeeName} 👋 ",
-                fontFamily = PoppinsMedium,
-                fontSize = 20.sp
-            )
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .height(150.dp),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(15.dp)
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-            ) {
+        ) {
+            Column() {
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 4.dp, start = 12.dp),
-                    text = "${data?.welcomeMsg}",
-                    fontSize = 12.sp,
+                    text = "  Hey , ${data?.employeeName} 👋 ",
                     fontFamily = PoppinsMedium,
-                    color = Color.Gray
-                )
-                Box(
-                    modifier = Modifier
-                        .size(96.dp)
-                        .clip(CircleShape)
-                        .padding(end = 12.dp)
-                )
-                {
-                    Image(
-                        painter = painterResource(id = R.drawable.workspace),
-                        contentDescription = null
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+                    fontSize = 20.sp,
 
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp, start = 12.dp),
+                        text = "${data?.welcomeMsg}",
+                        fontSize = 12.sp,
+                        fontFamily = PoppinsMedium,
+                        color = Color.Gray
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(96.dp)
+                            .clip(CircleShape)
+                            .padding(end = 12.dp)
+                    )
+                    {
+                        Image(
+                            painter = painterResource(id = R.drawable.workspace),
+                            contentDescription = null
+                        )
+                    }
+                }
+//                   Spacer(modifier = Modifier.height(24.dp))
+            }
+
+        }
     }
 }
+
+    }
