@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "name": "John Doe",
+  "imgUrl": "https://fastly.picsum.photos/id/516/200/300.jpg",
+  "designation": "Software Engineer",
+  "joinedMsg": "Joined on January 1, 2022",
+  "dept": "Engineering",
+  "location": "New York",
+  "email": "john.doe@example.com",
+  "interests": [
+    "Programming",
+    "Reading",
+    "Traveling"
+  ],
+  "dob": "1990-01-01",
+  "doj": "2023-02-01"
+}
