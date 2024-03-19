@@ -23,12 +23,16 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.runtime.Composable
@@ -45,6 +49,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,6 +65,7 @@ fun LoginScreen() {
 
     var email by remember { mutableStateOf("") };
     var password by remember { mutableStateOf("") };
+    var passwordVisibility by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -85,7 +92,10 @@ fun LoginScreen() {
                     label = {Text("Enter your email", color = Color.Gray)},
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)  ,
-                    shape = RoundedCornerShape(7.dp)
+                    shape = RoundedCornerShape(7.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFF6FB935)
+                    )
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 OutlinedTextField(
@@ -94,10 +104,25 @@ fun LoginScreen() {
                     leadingIcon = {
                         Icon(Icons.Outlined.Password,contentDescription = null)
                     },
+                    trailingIcon = {
+                                  val image =  if(passwordVisibility){
+                                       Icons.Filled.Visibility
+                                   }
+                        else{
+                            Icons.Filled.VisibilityOff
+                                   }
+                        IconButton(onClick = {passwordVisibility = !passwordVisibility}) {
+                            Icon(imageVector = image,contentDescription = null)
+                        }
+                    },
+                    visualTransformation = if(passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     label = {Text("Enter your password", color = Color.Gray)},
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    shape = RoundedCornerShape(7.dp)
+                    shape = RoundedCornerShape(7.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFF6FB935)
+                    )
                 )
                 Spacer(modifier = Modifier.height(22.dp))
                 Button(onClick = {
