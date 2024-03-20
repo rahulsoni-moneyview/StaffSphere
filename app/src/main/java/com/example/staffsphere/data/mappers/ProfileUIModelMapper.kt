@@ -13,6 +13,7 @@ fun ProfileDataResponse.toProfileUiModel(): ProfileUiModel {
         location = this.location,
         email = this.email,
         interests = this.interests,
+        projects = this.projects,
         dob = this.dob,
         doj = this.doj
     )

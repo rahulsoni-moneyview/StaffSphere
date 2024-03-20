@@ -45,7 +45,6 @@ import com.example.staffsphere.presentation.screens.People.userList
 import com.example.staffsphere.presentation.screens.Profile.BottomSheet
 import com.example.staffsphere.ui.theme.PoppinsBold
 import com.example.staffsphere.utils.MembersList
-import com.example.staffsphere.utils.PrimarySearchBar
 import com.example.staffsphere.utils.TeamName
 import com.example.staffsphere.utils.User
 
@@ -79,31 +78,18 @@ fun TeamMainScreen() {
 fun TeamScreen(
     onCardClickCallback: (item: TeamUiModel) -> Unit
 ) {
-
-    val members = generateDummyProfiles(20);
+    val members = generateDummyProfiles(40);
     val list = listOf(
         TeamUiModel(TeamName.ENGINEER, 12, members),
         TeamUiModel(TeamName.DESIGNER, 10, members),
         TeamUiModel(TeamName.PRODUCT, 8, members),
-        TeamUiModel(TeamName.ENGINEER, 24, members),
-        TeamUiModel(TeamName.PRODUCT, 7),
-        TeamUiModel(TeamName.FINANCE, 24),
-        TeamUiModel(TeamName.ENGINEER, 9),
+        TeamUiModel(TeamName.FINANCE, 24, members),
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        PrimarySearchBar(
-            text = "",
-            onTextChange = {},
-            placeHolder = "Search",
-            onCloseClicked = { },
-            marginHorizontal = 12.dp
-        )
         Spacer(modifier = Modifier.height(24.dp))
         LazyColumn {
             itemsIndexed(list) { index, item ->
@@ -118,8 +104,7 @@ fun TeamScreen(
 
 @Composable
 fun TeamCardView(
-    item: TeamUiModel,
-    onClickItem: () -> Unit
+    item: TeamUiModel, onClickItem: () -> Unit
 ) {
     val teamId = when (item.team) {
         TeamName.ENGINEER -> R.drawable.icon_engg
@@ -128,15 +113,13 @@ fun TeamCardView(
         TeamName.DESIGNER -> R.drawable.icon_design
         else -> 5 // Default value if jobType doesn't match any case
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClickItem() }
-            .padding(12.dp)
-            .border(width = 1.dp, shape = RoundedCornerShape(20.dp), color = Color.LightGray)
-            .padding(vertical = 12.dp, horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClickItem() }
+        .padding(12.dp)
+        .border(width = 1.dp, shape = RoundedCornerShape(20.dp), color = Color.LightGray)
+        .padding(vertical = 12.dp, horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = painterResource(id = teamId),
             contentDescription = null,
@@ -196,8 +179,7 @@ fun TeamDetailsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(16.dp))
-                Icon(
-                    Icons.Default.ArrowBack,
+                Icon(Icons.Default.ArrowBack,
                     contentDescription = "Back",
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
@@ -207,8 +189,7 @@ fun TeamDetailsScreen(
                         .padding(12.dp)
                         .width(24.dp)
                         .height(24.dp)
-                        .clickable { onBackPressed() }
-                )
+                        .clickable { onBackPressed() })
                 Spacer(modifier = Modifier.width(14.dp))
                 Icon(
                     painter = painterResource(id = imgId),
@@ -245,6 +226,5 @@ fun TeamDetailsScreen(
 }
 
 enum class TeamScreenState {
-    TEAM_MAIN_SCREEN,
-    TEAM_DETAILS_SCREEN
+    TEAM_MAIN_SCREEN, TEAM_DETAILS_SCREEN
 }

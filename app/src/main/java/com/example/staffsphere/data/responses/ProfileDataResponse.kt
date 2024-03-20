@@ -12,6 +12,7 @@ data class ProfileDataResponse(
     val location: String,
     val email: String,
     val interests: List<String>,
+    val projects: List<String>,
     val dob: String,
     val doj: String
 )

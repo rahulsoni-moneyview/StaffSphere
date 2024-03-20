@@ -23,10 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -112,7 +108,15 @@ fun ProfileDetailsScreen(data: ProfileUiModel? = null) {
             fontFamily = PoppinsSemiBold,
             color = Color.DarkGray
         )
-        ChipGridExample(data?.interests ?: chipItems)
+        ChipGridExample(data?.interests ?: chipItemsInterests)
+        Text(
+            modifier = Modifier.padding(top = 14.dp),
+            text = "Projects",
+            fontSize = 12.sp,
+            fontFamily = PoppinsSemiBold,
+            color = Color.DarkGray
+        )
+        ChipGridExample(data?.projects ?: chipItemsInterests)
         Divider(
             modifier = Modifier
                 .width(300.dp)
@@ -168,7 +172,7 @@ fun ProfileDetailsScreen(data: ProfileUiModel? = null) {
 
 }
 
-val chipItems = listOf(
+val chipItemsInterests = listOf(
     "Traveling",
     "Photography",
     "Cooking",
@@ -182,11 +186,17 @@ val chipItems = listOf(
     "Volunteering",
     "Programming"
 )
+val chipItemsProjects = listOf(
+    "Upi",
+    "Banking ",
+    "Project 1",
+    "Project 2",
+    "Demo project"
+)
 
 @Composable
 fun ChipGridExample(interestList: List<String>) {
-
-    FlowRowSimpleUsageExample(chipItems)
+    FlowRowSimpleUsageExample(interestList)
 }
 
 @Composable

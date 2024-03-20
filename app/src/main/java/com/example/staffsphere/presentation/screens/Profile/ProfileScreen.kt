@@ -1,5 +1,9 @@
 package com.example.staffsphere.presentation.screens.Profile
 
+import android.content.Intent
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.Card
+import androidx.compose.material.Colors
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.BottomSheetDefaults
@@ -36,11 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -54,7 +69,6 @@ import com.example.staffsphere.ui.theme.PoppinsSemiBold
 
 @Composable
 fun ProfileScreen() {
-
     val viewModel = hiltViewModel<ProfileViewModel>()
     viewModel.fetchProfile()
     val profileLivedata by viewModel.liveProfileData.collectAsStateWithLifecycle()
@@ -88,106 +102,15 @@ fun BottomSheet(onDismiss: () -> Unit) {
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
     ) {
-        ProfileDetailsScreen()
+        when (val currentData = profileLivedata) {
+            StandardResponse.Loading -> {}
+            is StandardResponse.Success -> ProfileDetailsScreen(currentData.data)
+            is StandardResponse.Failed -> {}
+            null -> {}
+        }
+
     }
 }
-
-data class ProfileData(
-    val name: String = "Yogesh",
-    val department: String = "Intern -",
-    val email: String = "yogeshnarendratiwari@gmai.com",
-    val image: Int = R.drawable.ic_launcher_background,
-)
-
-val user = ProfileData()
-
-@Composable
-fun ProfileCardComponent(
-    heading: String,
-    image: String,
-    content: String,
-    horizontalPadding: Dp,
-    verticalPadding: Dp,
-    isUserData: Boolean = false,
-    buttonText: String = "",
-    data: ProfileUiModel? = null
-) {
-    var showSheet by remember { mutableStateOf(false) }
-
-    if (showSheet) {
-        BottomSheet {
-            showSheet = false
-        }
-    }
-
-    Card(
-        modifier = Modifier
-            .height(146.dp)
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White,
-        ),
-        elevation = CardDefaults.cardElevation(3.dp), shape = RoundedCornerShape(7.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(12.dp))
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://fastly.picsum.photos/id/516/200/300.jpg?hmac=hMEuvTcrLNhrMSSGnaRit4YgalzJJ66stNu-UT70DKw")
-                            .crossfade(true).build(),
-                        contentScale = ContentScale.FillBounds,
-                        contentDescription = "Name",
-                        placeholder = painterResource(R.drawable.ic_not_found),
-                        error = painterResource(R.drawable.ic_not_found)
-                    )
-                }
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-
-                    Text(text = heading, fontSize = 18.sp, fontFamily = PoppinsSemiBold)
-
-                    Text(text = content, fontSize = 12.sp, fontFamily = PoppinsMedium)
-                    if (isUserData) {
-                        Text(text = buttonText,
-                            fontSize = 12.sp,
-                            fontFamily = PoppinsSemiBold,
-                            color = Color.Blue,
-                            modifier = Modifier.clickable { showSheet = true }
-
-                        )
-                    }
-
-                }
-            }
-
-            if (!isUserData) IconButton(
-                onClick = {}, modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    contentDescription = "Lock",
-                    modifier = Modifier
-                        .size(15.dp)
-                        .align(Alignment.CenterVertically),
-                    tint = Color.Gray
-
-                )
-            }
-        }
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable
@@ -200,7 +123,12 @@ fun Profile(data: ProfileUiModel? = null) {
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 18.dp)
+        ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -215,37 +143,46 @@ fun Profile(data: ProfileUiModel? = null) {
                 )
             }
 
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
 //                data
-                DetailsCard("")
+                ProfileCard("https://picsum.photos/id/1/200/300", "Rahul Kumar Soni", "SDE-Intern")
+                OutlinedButton(
+                    onClick = { showSheet = true },
+                    Modifier
+                        .width(176.dp)
+                        .padding(top = 12.dp)
+                ) {
+                    Text("view complete profile")
 
+                }
             }
 
             Text(
-                modifier = Modifier.padding(18.dp),
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
                 text = "Your details",
                 fontSize = 16.sp,
                 color = Color.Gray,
                 fontFamily = PoppinsMedium
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            DetailsCard(
-                "R.drawable.workspace",
+            Spacer(
+                modifier = Modifier.height(
+                    1.dp
+                )
+            )
+            ExpandableCard(
                 "Basic Details",
-                "First Name, Last Name, Date of Birth, Gender, Current Address, Mobile, Personal Email"
+                "Lorem Ipsum is simply dummy text of the printing"
             )
             Spacer(modifier = Modifier.height(16.dp))
-            DetailsCard(
-                "R.drawable.workspace",
-                "Additional Details",
-                "T-shirt size , Interests"
+            ExpandableCard(
+                "Additional Details", "Lorem Ipsum is simply dummy text of the printing",
             )
+
             Spacer(modifier = Modifier.height(16.dp))
-            DetailsCard(
-                "R.drawable.workspace",
-                "Work Details",
-                "Employee Id, Team, Role, Reporting Manager, Employment Type, Joining Date, Work Email"
+            ExpandableCard(
+                "Team  Informations", "Lorem Ipsum is simply dummy text of the printing",
             )
+
         }
     }
 }
@@ -254,11 +191,100 @@ fun Profile(data: ProfileUiModel? = null) {
 @Preview(showBackground = true)
 @Composable
 fun DetailsCard(
+    title: String = "Basic Details",
+    desc: String = "First name last name , date of birth",
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(12.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    text = title,
+                    fontSize = 16.sp,
+                    fontFamily = PoppinsSemiBold,
+                    color = Color.Black
+                )
+                Text(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    text = desc,
+                    fontSize = 12.sp,
+                    fontFamily = PoppinsMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+
+
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(showBackground = true)
+@Composable
+fun ExpandableCard(
+    title: String = "Title",
+    desc: String = ""
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(shape = RoundedCornerShape(8.dp),
+        elevation = 8.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        onClick = {
+            expanded = !expanded
+        }) {
+        Column {
+            DetailsCard(title, desc)
+            if (expanded) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "title name : value",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "title name : value",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "title name : value",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileCard(
     icon: String = "",
     title: String = "Basic Details",
     desc: String = "First name last name , date of birth",
-    content: @Composable() () -> Unit = {}
 ) {
+    val localUriHandler = LocalUriHandler.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -268,12 +294,12 @@ fun DetailsCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
-        elevation = CardDefaults.cardElevation(3.dp)
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -295,7 +321,6 @@ fun DetailsCard(
             Column(
                 modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-
                 Text(
                     modifier = Modifier.padding(horizontal = 4.dp),
                     text = title,
@@ -310,14 +335,36 @@ fun DetailsCard(
                     fontFamily = PoppinsMedium,
                     color = Color.Gray
                 )
-
-
+                Row(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .padding(start = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Image(painter = painterResource(id = R.drawable.icon_slack),
+                        contentDescription = "slack",
+                        modifier = Modifier
+                            .height(16.dp)
+                            .width(16.dp)
+                            .clickable { localUriHandler.openUri("https://openinapp.link/ggd8x") })
+                    Image(painter = painterResource(id = R.drawable.gmail),
+                        contentDescription = "mail",
+                        modifier = Modifier
+                            .height(16.dp)
+                            .width(16.dp)
+                            .clickable { localUriHandler.openUri("mailto:rahul.kumar.soni2511@gmail.com") })
+                    Image(painter = painterResource(id = R.drawable.telephone),
+                        contentDescription = "phone",
+                        modifier = Modifier
+                            .height(16.dp)
+                            .width(16.dp)
+                            .clickable { localUriHandler.openUri("tel:+91-7070039357") })
+                }
             }
-
         }
-
 
     }
 
 
 }
+

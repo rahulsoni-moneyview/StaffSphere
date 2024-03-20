@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.staffsphere.presentation.navigation.BottomNavigationBar
 import com.example.staffsphere.presentation.navigation.NavigationItem
+import com.example.staffsphere.presentation.screens.Login.LoginScreen
 import com.example.staffsphere.presentation.screens.OrgChart.OrgChartScreen
 import com.example.staffsphere.presentation.screens.People.PeopleScreen
 import com.example.staffsphere.presentation.screens.Team.TeamMainScreen
@@ -64,7 +65,7 @@ fun MainScreen() {
 
 @Composable
 fun Navigation(navController: NavHostController) {
-    NavHost(navController, startDestination = NavigationItem.Home.route) {
+    NavHost(navController, startDestination = "login") {
         composable(NavigationItem.Home.route) {
             HomeScreen()
         }
@@ -79,6 +80,10 @@ fun Navigation(navController: NavHostController) {
         }
         composable(NavigationItem.Profile.route) {
             ProfileScreen()
+        }
+        composable("login")
+        {
+            LoginScreen(navController)
         }
     }
 }

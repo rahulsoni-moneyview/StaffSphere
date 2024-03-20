@@ -3,7 +3,6 @@ package com.example.staffsphere.presentation.screens.Profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.staffsphere.domain.StandardResponse
-import com.example.staffsphere.domain.models.HomeUiModel
 import com.example.staffsphere.domain.models.ProfileUiModel
 import com.example.staffsphere.domain.repository.IDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

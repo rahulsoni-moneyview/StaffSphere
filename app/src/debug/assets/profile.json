@@ -2,7 +2,7 @@
   "success": true,
   "name": "John Doe",
   "imgUrl": "https://fastly.picsum.photos/id/516/200/300.jpg",
-  "designation": "Software Engineer",
+  "designation": "Software Engineer 2",
   "joinedMsg": "Joined on January 1, 2022",
   "dept": "Engineering",
   "location": "New York",
@@ -12,6 +12,11 @@
     "Reading",
     "Traveling"
   ],
-  "dob": "1990-01-01",
-  "doj": "2023-02-01"
+  "projects": [
+    "Growth",
+    "Upi",
+    "banking"
+  ],
+  "dob": "16th january 2003",
+  "doj": "26th February 2024"
 }

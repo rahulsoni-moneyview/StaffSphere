@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.TextFieldColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -22,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,130 +58,60 @@ fun MembersList(userList: List<User>) {
             showSheet = false
         }
     }
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-    ) {
-        Column(modifier = Modifier.padding(13.dp)) {
-            // Search bar
-            PrimarySearchBar(
-                text = "",
-                onTextChange = {},
-                placeHolder = "Search",
-                onCloseClicked = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .height(0.5.dp)
-                    .background(Color.LightGray)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding()
-            ) {
-                Text(
-                    text = "People", style = TextStyle(
-                        color = Color.Black, fontSize = 24.sp, fontWeight = FontWeight.Medium
-                    ), modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-                )
+
+    val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
+
+    val filteredUsers = if (searchQuery.isEmpty()) {
+        userList
+    } else {
+        userList.filter { user ->
+            user.name.contains(searchQuery, ignoreCase = true) ||
+                    user.jobDescription.contains(searchQuery, ignoreCase = true) ||
+                    user.teamName.equals(searchQuery)
+        }
+    }
+    Column(modifier = Modifier.padding(13.dp)) {
+        // Search bar
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            value = searchQuery,
+            onValueChange = setSearchQuery,
+            placeholder = {
+                Text("Search using name , dept ..")
             }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 2.dp, bottom = 16.dp)
-                    .height(0.5.dp)
-                    .background(Color.LightGray)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding()
+        ) {
+            Text(
+                text = "People", style = TextStyle(
+                    color = Color.Black, fontSize = 24.sp, fontWeight = FontWeight.Medium
+                ), modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
-            // Lazy column
-            LazyColumn(modifier = Modifier.padding()) {
-                items(userList.size) { index ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding()
-                            .clickable { showSheet = true }) {
-                        UserProfileUi(userList[index])
-                    }
-                    // Horizontal line
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(0.5.dp)
-                            .background(Color.LightGray)
-                    )
+        }
+        // Lazy column
+        LazyColumn(modifier = Modifier.padding()) {
+            items(filteredUsers.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding()
+                        .clickable { showSheet = true }) {
+                    UserProfileUi(filteredUsers[index])
                 }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(0.5.dp)
+                        .background(Color.LightGray)
+                )
             }
         }
     }
-}
-
-
-@Composable
-@Preview
-fun PrimarySearchBar(
-    modifier: Modifier = Modifier,
-    text: String = "Search here",
-    onTextChange: (String) -> Unit = {},
-    placeHolder: String = "Something",
-    onCloseClicked: () -> Unit = {},
-    onMicClicked: () -> Unit = {},
-    marginHorizontal: Dp = 0.dp
-) {
-    OutlinedTextField(shape = CircleShape, value = text, onValueChange = {
-        onTextChange(it)
-    }, placeholder = {
-        Text(
-            text = placeHolder
-        )
-    }, leadingIcon = {
-        IconButton(onClick = { }) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(22.dp)
-                    .then(modifier)
-            )
-        }
-    }, trailingIcon = {
-        IconButton(onClick = {
-            if (text.isNotBlank()) {
-                onCloseClicked()
-            } else {
-                onMicClicked()
-            }
-        }) {
-            if (text.isNotBlank()) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = null,
-                    modifier = modifier.size(22.dp)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = null,
-                    modifier = modifier.size(22.dp)
-                )
-            }
-        }
-    }, modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = marginHorizontal)
-
-    )
-}
-
-@Composable
-fun MemberCount(member: String) {
-    Text(
-        text = member,
-        style = TextStyle(color = Color.Gray, fontSize = 16.sp, fontWeight = FontWeight.Medium),
-        modifier = Modifier.padding(start = 32.dp, top = 12.dp)
-    )
 }
 
 @Composable
@@ -194,8 +127,8 @@ fun UserProfileUi(user: User) {
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://fastly.picsum.photos/id/516/300/300.jpg")
-                    .crossfade(true).build(),
+                    .data("https://fastly.picsum.photos/id/516/300/300.jpg").crossfade(true)
+                    .build(),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = "Name",
                 placeholder = painterResource(R.drawable.ic_not_found),
@@ -285,12 +218,6 @@ fun ChipDesign(icon: Int, text: String, color: Color = Color.LightGray) {
             ), modifier = Modifier.padding(end = 8.dp, start = 2.dp, top = 4.dp, bottom = 4.dp)
         )
     }
-}
-
-@Composable
-@Preview
-fun UserProfileUiPreview() {
-    UserProfileUi(User("Sudharsan Parthsarathi", "Designer", TeamName.DESIGNER))
 }
 
 enum class TeamName {
