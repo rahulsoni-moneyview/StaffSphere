@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -127,6 +128,45 @@ Box(modifier = Modifier.fillMaxSize()){
 
             }
         }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .height(400.dp),
+            elevation = 2.dp,
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
 
+            ) {
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = "Moneyview",
+                        fontFamily = PoppinsMedium,
+                        fontSize = 20.sp,
+
+                        )
+
+
+                        Text(
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .weight(1f),
+                            text = "A fintech company focused on leveraging technology to provide accessible financial services to all.\n \nIn a country of more than a billion people, only 10% are eligible for formal credit products. Our vision is to provide world-class financial products & services to those 90% of the underserved Indians"+
+                                    "We’re making this possible through our AI powered proprietary models that predict risk more accurately than traditional models used in the industry, thus ensuring right credit solutions are provided to the right users in a simplified manner!",
+                            fontSize = 12.sp,
+                            fontFamily = PoppinsMedium,
+                            color = Color.Gray
+                        )
+
+
+                }
+
+            }
+        }
 
     }}}
